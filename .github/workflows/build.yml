@@ -22,8 +22,9 @@ jobs:
           node-version: '20.x'
       - name: 🔧 Create build
         run: |
-          npm install
-          npm run build
+          corepack enable
+          yarn install
+          yarn run build
       - uses: actions/upload-artifact@v4
         with:
           name: build
