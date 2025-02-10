@@ -6,7 +6,7 @@ module.exports = {
   },
   webpack: {
     alias: {
-      'mapbox-gl': path.resolve(__dirname, './node_modules/maplibre-gl'),
+      'mapbox-gl': path.resolve(__dirname, 'node_modules/maplibre-gl'),
     },
   },
 }

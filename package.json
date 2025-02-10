@@ -45,7 +45,6 @@
     "test:all": "yarn test:other && yarn test:js",
     "predeploy": "craco build",
     "deploy": "gh-pages -d build",
-    "eject": "craco eject",
     "fix:other": "yarn prettier --write",
     "fix:js": "yarn test:js --fix",
     "fix": "yarn fix:js && yarn fix:other",
