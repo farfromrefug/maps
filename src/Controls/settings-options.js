@@ -110,6 +110,18 @@ const maneuverPenalty = {
   },
 }
 
+const nonNetworkPenalty = {
+  name: 'Non Network Penalty',
+  param: 'non_network_penalty',
+  description: 'A penalty applied to non official bicycle roads',
+  unit: 'sec',
+  settings: {
+    min: 0,
+    max: 60,
+    step: 0.05,
+  },
+}
+
 const gateCost = {
   name: 'Gate Cost',
   param: 'gate_cost',
@@ -713,6 +725,7 @@ export const generalize = {
 
 export const settingsInit = {
   maneuver_penalty: 5,
+  non_network_penalty: 1.05,
   country_crossing_penalty: 0,
   country_crossing_cost: 600,
   length: 21.5,
@@ -723,7 +736,7 @@ export const settingsInit = {
   hazmat: false,
   use_highways: 1,
   use_tolls: 1,
-  use_ferry: 1,
+  use_ferry: 0,
   ferry_cost: 300,
   use_living_streets: 0.5,
   use_tracks: 0,
@@ -739,10 +752,10 @@ export const settingsInit = {
   exclude_cash_only_tolls: false,
   bicycle_type: 'Hybrid',
   cycling_speed: 20,
-  use_roads: 0.5,
+  use_roads: 0,
   use_hills: 0.5,
   avoid_bad_surfaces: 0.25,
-  top_speed: 140,
+  top_speed: 130,
   use_primary: 0.5,
   walking_speed: 5.1,
   walkway_factor: 1,
@@ -750,7 +763,7 @@ export const settingsInit = {
   alley_factor: 2,
   driveway_factor: 5,
   step_penalty: 0,
-  max_hiking_difficulty: 1,
+  max_hiking_difficulty: 6,
   exclude_polygons: [],
   use_geocoding: true,
   use_lit: 0,
@@ -892,6 +905,7 @@ export const profile_settings = {
       useHills,
       avoidBadSurfaces,
       maneuverPenalty,
+      nonNetworkPenalty,
       gateCost,
       gatePenalty,
     ],

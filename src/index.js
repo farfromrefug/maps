@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 
 import { createStore, applyMiddleware } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
@@ -16,11 +16,10 @@ const store = createStore(
   reducer,
   composeWithDevTools(applyMiddleware(...middleware))
 )
-
-render(
+const root = createRoot(document.getElementById('valhalla-app-root'))
+root.render(
   <Provider store={store}>
     {' '}
     <App />
-  </Provider>,
-  document.getElementById('valhalla-app-root')
+  </Provider>
 )

@@ -8,7 +8,7 @@ import {
   CLEAR_ISOS,
 } from 'actions/types'
 
-import { VALHALLA_OSM_URL } from '../utils/valhalla'
+import { VALHALLA_OSM_URL } from '../utils/valhalla.js'
 
 const initialState = {
   successful: false,

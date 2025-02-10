@@ -45,6 +45,7 @@ export const buildDirectionsRequest = ({
       exclude_polygons: settings.directions.exclude_polygons,
       locations: makeLocations(activeWaypoints),
       units: 'kilometers',
+      language: 'fr-FR',
       alternates: settings.directions.alternates,
       id: 'valhalla_directions',
     },
@@ -112,6 +113,7 @@ const makeLocations = (waypoints) => {
   const locations = []
   for (const [idx, waypoint] of waypoints.entries()) {
     const type = [0, waypoints.length - 1].includes(idx) ? 'break' : 'via'
+    console.log('makeLocations', waypoint)
     locations.push({
       lon: waypoint.displaylnglat[0],
       lat: waypoint.displaylnglat[1],

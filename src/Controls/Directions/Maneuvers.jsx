@@ -25,13 +25,15 @@ class Maneuvers extends React.Component {
   highlightMnv = (sIdx, eIdx) => {
     const { dispatch, idx } = this.props
     dispatch(
-      highlightManeuver({ startIndex: sIdx, endIndex: eIdx, alternate: idx })
+      highlightManeuver({ startIndex: sIdx, endIndex: eIdx, routeIndex: idx })
     )
   }
 
   zoomToMnv = (sIdx) => {
-    const { dispatch } = this.props
-    dispatch(zoomToManeuver({ index: sIdx, timeNow: Date.now() }))
+    const { dispatch, idx } = this.props
+    dispatch(
+      zoomToManeuver({ index: sIdx, routeIndex: idx, timeNow: Date.now() })
+    )
   }
 
   render() {

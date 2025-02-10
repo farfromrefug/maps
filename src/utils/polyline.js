@@ -41,7 +41,7 @@ export const decode = (str, precision) => {
     lat += latitude_change
     lng += longitude_change
 
-    coordinates.push([lat / factor, lng / factor])
+    coordinates.push([lng / factor, lat / factor])
   }
 
   return coordinates

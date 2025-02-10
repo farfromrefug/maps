@@ -2,14 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Segment, Button, Icon } from 'semantic-ui-react'
-import L from 'leaflet'
+import togpx from 'togpx'
+import jsonFormat from 'json-format'
 
 import { makeRequest } from 'actions/directionsActions'
 import { downloadFile } from 'actions/commonActions'
 import Summary from './Summary'
 import Maneuvers from './Maneuvers'
 import { VALHALLA_OSM_URL } from 'utils/valhalla'
-import jsonFormat from 'json-format'
 import { jsonConfig } from 'Controls/settings-options'
 
 class OutputControl extends React.Component {
@@ -69,6 +69,19 @@ class OutputControl extends React.Component {
       [dtNow.getHours(), dtNow.getMinutes(), dtNow.getSeconds()].join(':')
     return dtNow
   }
+
+  getGeometry(routeIndex) {
+    const { results } = this.props
+    let coords
+    if (routeIndex == 0) {
+      coords = results[VALHALLA_OSM_URL].data.decodedGeometry
+    } else {
+      coords =
+        results[VALHALLA_OSM_URL].data.alternates[routeIndex - 1]
+          .decodedGeometry
+    }
+    return coords
+  }
   exportToJson = (e) => {
     const { results } = this.props
     const { data } = results[VALHALLA_OSM_URL]
@@ -81,17 +94,35 @@ class OutputControl extends React.Component {
     })
   }
 
-  exportToGeoJson = (e) => {
-    const { results } = this.props
-    const coordinates = results[VALHALLA_OSM_URL].data.decodedGeometry
-    const formattedData = jsonFormat(
-      L.polyline(coordinates).toGeoJSON(),
-      jsonConfig
-    )
+  exportToGeoJson = (routeIndex, e) => {
+    const coordinates = this.getGeometry(routeIndex)
+    const formattedData = {
+      type: 'Feature',
+      geometry: {
+        type: 'LineString',
+        coordinates,
+      },
+    }
+    e.preventDefault()
+    downloadFile({
+      data: JSON.stringify(formattedData),
+      fileName: 'valhalla-directions_' + this.dateNow() + '.geojson',
+      fileType: 'text/json',
+    })
+  }
+  exportToGPX = (routeIndex, e) => {
+    const coordinates = this.getGeometry(routeIndex)
+    const formattedData = togpx({
+      type: 'Feature',
+      geometry: {
+        type: 'LineString',
+        coordinates,
+      },
+    })
     e.preventDefault()
     downloadFile({
       data: formattedData,
-      fileName: 'valhalla-directions_' + this.dateNow() + '.geojson',
+      fileName: 'valhalla-directions_' + this.dateNow() + '.gpx',
       fileType: 'text/json',
     })
   }
@@ -100,72 +131,16 @@ class OutputControl extends React.Component {
     const { results, successful } = this.props
 
     const data = results[VALHALLA_OSM_URL].data
-
-    let alternates = []
-    if (data.alternates) {
-      alternates = data.alternates.map((alternate, i) => {
-        const legs = alternate.trip.legs
-        return (
-          <Segment
-            key={`alternate_${i}`}
-            style={{
-              margin: '0 1rem 10px',
-              display: successful ? 'block' : 'none',
-            }}
-          >
-            <div className={'flex-column'}>
-              <Summary
-                header={`Alternate ${i + 1}`}
-                idx={i}
-                summary={alternate.trip.summary}
-              />
-              <div className={'flex justify-between'}>
-                <Button
-                  size="mini"
-                  toggle
-                  active={this.state.showResults[i]}
-                  onClick={() => this.showManeuvers(i)}
-                >
-                  {this.state.showResults[i]
-                    ? 'Hide Maneuvers'
-                    : 'Show Maneuvers'}
-                </Button>
-                <div className={'flex'}>
-                  <div
-                    className={'flex pointer'}
-                    style={{ alignSelf: 'center' }}
-                    onClick={this.exportToJson}
-                  >
-                    <Icon circular name={'download'} />
-                    <div className={'pa1 b f6'}>{'JSON'}</div>
-                  </div>
-                  <div
-                    className={'ml2 flex pointer'}
-                    style={{ alignSelf: 'center' }}
-                    onClick={this.exportToGeoJson}
-                  >
-                    <Icon circular name={'download'} />
-                    <div className={'pa1 b f6'}>{'GeoJSON'}</div>
-                  </div>
-                </div>
-              </div>
-
-              {this.state.showResults[i] ? (
-                <div className={'flex-column'}>
-                  <Maneuvers legs={legs} idx={i} />
-                </div>
-              ) : null}
-            </div>
-          </Segment>
-        )
-      })
-    }
-    if (!data.trip) {
-      return ''
-    }
-    return (
-      <>
+    const routes = [data].concat(data.alternates || [])
+    // if (data.alternates) {
+    return routes.map((route, i) => {
+      if (!route.trip) {
+        return ''
+      }
+      const legs = route.trip.legs
+      return (
         <Segment
+          key={`route_${i + 1}`}
           style={{
             margin: '0 1rem 10px',
             display: successful ? 'block' : 'none',
@@ -173,18 +148,18 @@ class OutputControl extends React.Component {
         >
           <div className={'flex-column'}>
             <Summary
-              header={'Directions'}
-              summary={data.trip.summary}
-              idx={-1}
+              header={`Route ${i}`}
+              idx={i}
+              summary={route.trip.summary}
             />
             <div className={'flex justify-between'}>
               <Button
                 size="mini"
                 toggle
-                active={this.state.showResults[-1]}
-                onClick={() => this.showManeuvers(-1)}
+                active={this.state.showResults[i]}
+                onClick={() => this.showManeuvers(i)}
               >
-                {this.state.showResults[-1]
+                {this.state.showResults[i]
                   ? 'Hide Maneuvers'
                   : 'Show Maneuvers'}
               </Button>
@@ -192,7 +167,7 @@ class OutputControl extends React.Component {
                 <div
                   className={'flex pointer'}
                   style={{ alignSelf: 'center' }}
-                  onClick={this.exportToJson}
+                  onClick={(e) => this.exportToJson(e)}
                 >
                   <Icon circular name={'download'} />
                   <div className={'pa1 b f6'}>{'JSON'}</div>
@@ -200,27 +175,31 @@ class OutputControl extends React.Component {
                 <div
                   className={'ml2 flex pointer'}
                   style={{ alignSelf: 'center' }}
-                  onClick={this.exportToGeoJson}
+                  onClick={(e) => this.exportToGeoJson(i, e)}
                 >
                   <Icon circular name={'download'} />
                   <div className={'pa1 b f6'}>{'GeoJSON'}</div>
                 </div>
+                <div
+                  className={'ml2 flex pointer'}
+                  style={{ alignSelf: 'center' }}
+                  onClick={(e) => this.exportToGPX(i, e)}
+                >
+                  <Icon circular name={'download'} />
+                  <div className={'pa1 b f6'}>{'GPX'}</div>
+                </div>
               </div>
             </div>
 
-            {this.state.showResults[-1] ? (
+            {this.state.showResults[i] ? (
               <div className={'flex-column'}>
-                <Maneuvers
-                  legs={data.trip ? data.trip.legs : undefined}
-                  idx={-1}
-                />
+                <Maneuvers legs={legs} idx={i} />
               </div>
             ) : null}
           </div>
         </Segment>
-        {alternates.length ? alternates : ''}
-      </>
-    )
+      )
+    })
   }
 }
 

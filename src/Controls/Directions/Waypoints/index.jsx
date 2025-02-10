@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+// import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+import { DndContext } from '@dnd-kit/core'
+import Droppable from 'components/Droppable'
+import Draggable from 'components/Draggable'
 import { connect } from 'react-redux'
 
 import Waypoint from './Waypoint'
@@ -61,6 +64,7 @@ class Waypoints extends Component {
     }
 
     const { dispatch, directions } = this.props
+    console.log('onDragEnd', directions.waypoints)
 
     const items = reorder(
       directions.waypoints,
@@ -74,7 +78,7 @@ class Waypoints extends Component {
   render() {
     const { waypoints } = this.props.directions
     return (
-      <DragDropContext onDragEnd={this.onDragEnd}>
+      <DndContext onDragEnd={this.onDragEnd}>
         <Droppable droppableId="droppable">
           {(provided, snapshot) => (
             <React.Fragment>
@@ -111,7 +115,7 @@ class Waypoints extends Component {
             </React.Fragment>
           )}
         </Droppable>
-      </DragDropContext>
+      </DndContext>
     )
   }
 }

@@ -34,6 +34,7 @@ import {
   filterProfileSettings,
   updatePermalink,
   zoomTo,
+  showDirections,
 } from './commonActions'
 
 const serverMapping = {
@@ -43,6 +44,7 @@ const serverMapping = {
 export const makeRequest = () => (dispatch, getState) => {
   dispatch(updatePermalink())
   const { waypoints } = getState().directions
+  console.log('makeRequest', waypoints)
   const { profile, dateTime } = getState().common
   let { settings } = getState().common
   // if 2 results are selected
@@ -96,6 +98,7 @@ const fetchValhallaDirections = (valhallaRequest) => (dispatch) => {
         }
       }
       dispatch(registerRouteResponse(VALHALLA_OSM_URL, data))
+      dispatch(showDirections())
       dispatch(zoomTo(data.decodedGeometry))
     })
     .catch(({ response }) => {

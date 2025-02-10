@@ -55,20 +55,6 @@ class MainControl extends React.Component {
 
     this.getLastUpdate()
 
-    toast.success(
-      'Welcome to Valhalla! Global Routing Service - funded by FOSSGIS e.V.',
-      {
-        position: 'bottom-center',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'light',
-      }
-    )
-
     const params = Object.fromEntries(new URL(document.location).searchParams)
 
     if ('profile' in params) {
@@ -88,7 +74,7 @@ class MainControl extends React.Component {
     }
 
     if ('wps' in params && params.wps.length > 0) {
-      const coordinates = params.wps.split(',').map(Number)
+      const coordinates = params.wps.split(',').map(parseFloat)
       const processedCoords = []
       pairwise(coordinates, (current, next, i) => {
         const latLng = { lat: next, lng: current }
@@ -144,7 +130,9 @@ class MainControl extends React.Component {
           }
         }
       })
-      dispatch(zoomTo(processedCoords))
+      if (processedCoords.length > 1) {
+        dispatch(zoomTo(processedCoords))
+      }
       dispatch(resetSettings())
     }
   }
@@ -175,16 +163,16 @@ class MainControl extends React.Component {
 
   handleDirectionsToggle = (event, data) => {
     const { dispatch } = this.props
-    const { showDirectionsPanel } = this.props
-    if (!showDirectionsPanel) {
-      document
-        .getElementsByClassName('heightgraph-container')[0]
-        .setAttribute('width', window.innerWidth * 0.75)
-    } else {
-      document
-        .getElementsByClassName('heightgraph-container')[0]
-        .setAttribute('width', window.innerWidth * 0.9)
-    }
+    // const { showDirectionsPanel } = this.props
+    // if (!showDirectionsPanel) {
+    //   document
+    //     .getElementsByClassName('heightgraph-container')[0]
+    //     .setAttribute('width', window.innerWidth * 0.75)
+    // } else {
+    //   document
+    //     .getElementsByClassName('heightgraph-container')[0]
+    //     .setAttribute('width', window.innerWidth * 0.9)
+    // }
     dispatch(toggleDirections())
   }
 

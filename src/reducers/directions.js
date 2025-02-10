@@ -15,18 +15,18 @@ import {
   UPDATE_INCLINE_DECLINE,
 } from 'actions/types'
 
-import { VALHALLA_OSM_URL } from '../utils/valhalla'
+import { VALHALLA_OSM_URL } from '../utils/valhalla.js'
 
 const initialState = {
   successful: false,
   highlightSegment: {
     startIndex: -1,
     endIndex: -1,
-    // -1 is main route, other values are indices into the alternate array
-    alternate: -1,
+    routeIndex: 0,
   },
   waypoints: [],
   zoomObj: {
+    routeIndex: 0,
     index: -1,
     timeNow: -1,
   },
@@ -71,8 +71,7 @@ export const directions = (state = initialState, action) => {
         inclineDeclineTotal: undefined,
         results: {
           ...state.results,
-          [action.payload]: {
-            ...state.results[action.payload],
+          [VALHALLA_OSM_URL]: {
             data: {},
           },
         },
@@ -81,10 +80,12 @@ export const directions = (state = initialState, action) => {
     case RECEIVE_ROUTE_RESULTS: {
       const { alternates } = action.payload.data
 
-      const show = {}
+      const show = {
+        0: true,
+      }
       if (alternates) {
         for (let i = 0; i < alternates.length; ++i) {
-          show[i] = true
+          show[i + 1] = true
         }
       }
       return {
@@ -96,7 +97,6 @@ export const directions = (state = initialState, action) => {
             ...state.results[action.payload.provider],
             data: action.payload.data,
             show: {
-              '-1': true,
               ...show,
             },
           },

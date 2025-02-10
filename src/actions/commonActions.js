@@ -9,6 +9,7 @@ import {
   RESET_SETTINGS,
   TOGGLE_DIRECTIONS,
   UPDATE_DATETIME,
+  SHOW_DIRECTIONS,
 } from './types'
 
 import {
@@ -50,6 +51,10 @@ export const doShowSettings = () => ({
 
 export const toggleDirections = () => ({
   type: TOGGLE_DIRECTIONS,
+})
+
+export const showDirections = () => ({
+  type: SHOW_DIRECTIONS,
 })
 
 export const resetSettings = () => ({
@@ -104,7 +109,11 @@ export const updatePermalink = () => (dispatch, getState) => {
     queryParams.set('generalize', generalize)
     queryParams.set('denoise', denoise)
   }
-  window.history.replaceState(null, null, path + queryParams.toString())
+  window.history.replaceState(
+    { currentReplaced: path + queryParams.toString() },
+    null,
+    path + queryParams.toString()
+  )
 }
 
 export const downloadFile = ({ data, fileName, fileType }) => {

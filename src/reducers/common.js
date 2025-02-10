@@ -9,6 +9,7 @@ import {
   RESET_SETTINGS,
   TOGGLE_DIRECTIONS,
   UPDATE_DATETIME,
+  SHOW_DIRECTIONS,
 } from 'actions/types'
 import {
   settingsInit,
@@ -18,7 +19,7 @@ import {
 const initialState = {
   activeTab: 0,
   showSettings: false,
-  showDirectionsPanel: true,
+  showDirectionsPanel: false,
   coordinates: [],
   loading: false,
   message: {
@@ -69,6 +70,12 @@ export const common = (state = initialState, action) => {
       return {
         ...state,
         showDirectionsPanel: !state.showDirectionsPanel,
+      }
+    }
+    case SHOW_DIRECTIONS: {
+      return {
+        ...state,
+        showDirectionsPanel: true,
       }
     }
 
