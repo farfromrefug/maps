@@ -1,4 +1,4 @@
-name: Deploy to host server
+name: Build
 
 on:
   workflow_dispatch:
