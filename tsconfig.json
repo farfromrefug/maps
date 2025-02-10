@@ -16,8 +16,8 @@
     "strictNullChecks": false,
     "esModuleInterop": true,
     "paths": {
-      "mapbox-gl": ["../node_modules/maplibre-gl"],
-      "mapbox-gl/*": ["../node_modules/maplibre-gl/*"]
+      "mapbox-gl": ["./node_modules/maplibre-gl"],
+      "mapbox-gl/*": ["./node_modules/maplibre-gl/*"]
     }
   },
   "exclude": [
