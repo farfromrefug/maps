@@ -2,15 +2,6 @@ name: Build
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
-    paths:
-      - 'src/**'
-      - 'public/**'
-      - 'package*.json'
-      - '.env'
-      - 'jsconfig.json'
 
 jobs:
   deploy:
